@@ -40,14 +40,18 @@ export class OllamaService {
         try {
             const response = await this.ollama.generate({
                 model: this.getModel(),
-                prompt: `Perform a production-level security and performance audit on this code.
-Check for:
-1. Memory leaks (e.g., closures, uncleared intervals, event listeners).
-2. Database calls (e.g., raw queries, N+1 problems, missing indexes).
-3. I/O blocking (e.g., synchronous FS calls, long-running loops).
-4. Data insecurity in API metadata (e.g., PII in headers, sensitive data in logs).
+                prompt: `Perform a CRITICAL production-readiness audit on the following code. 
+Identify any HARMFUL patterns that would cause a PRODUCTION BREAK or CRASH.
 
-Return a list of issues found. BE SPECIFIC. If no issues, reply "No issues found".
+Focus on:
+1. Production Breakers: Unhandled promises, potential null pointer exceptions in critical paths, infinite loops, or unhandled exceptions that could crash the process.
+2. Memory Leaks: Closures, uncleared intervals, or large object accumulation.
+3. Database & I/O: Synchronous I/O in async environments, N+1 queries, or missing database transaction safety.
+4. Security & Metadata: PII leakage in metadata, hardcoded secrets, or insecure API configurations.
+
+Return its findings as a bulleted list. Start each bullet with a category label like [CRITICAL], [MEMORY], [IO], or [SECURITY].
+If no issues are found, strictly return "No issues found".
+
 Code:
 ${code}`,
             });

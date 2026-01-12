@@ -86,24 +86,45 @@ export class CodeAnalyzer {
 
     private parseIssues(text: string): { message: string, severity: vscode.DiagnosticSeverity, code: string }[] {
         const issues: { message: string, severity: vscode.DiagnosticSeverity, code: string }[] = [];
-        const lowerText = text.toLowerCase();
+        const lines = text.split('\n');
 
-        const checkIssue = (keywords: string[], messagePrefix: string, severity: vscode.DiagnosticSeverity, code: string) => {
-            if (keywords.some(k => lowerText.includes(k))) {
-                const line = text.split('\n').find(l => keywords.some(k => l.toLowerCase().includes(k)));
+        for (const line of lines) {
+            const trimLine = line.trim();
+            if (!trimLine || trimLine.toLowerCase() === 'no issues found') continue;
+
+            if (trimLine.includes('[CRITICAL]') || trimLine.includes('crash') || trimLine.includes('unhandled')) {
                 issues.push({
-                    message: line ? line.trim() : `${messagePrefix} issue detected.`,
-                    severity,
-                    code
+                    message: trimLine,
+                    severity: vscode.DiagnosticSeverity.Error,
+                    code: 'prod-breaker'
+                });
+            } else if (trimLine.includes('[MEMORY]') || trimLine.includes('leak')) {
+                issues.push({
+                    message: trimLine,
+                    severity: vscode.DiagnosticSeverity.Warning,
+                    code: 'mem-leak'
+                });
+            } else if (trimLine.includes('[IO]') || trimLine.includes('blocking') || trimLine.includes('synchronous')) {
+                issues.push({
+                    message: trimLine,
+                    severity: vscode.DiagnosticSeverity.Error,
+                    code: 'io-blocking'
+                });
+            } else if (trimLine.includes('[SECURITY]') || trimLine.includes('insecure') || trimLine.includes('pii')) {
+                issues.push({
+                    message: trimLine,
+                    severity: vscode.DiagnosticSeverity.Error,
+                    code: 'security-risk'
+                });
+            } else if (trimLine.includes('database') || trimLine.includes('query')) {
+                issues.push({
+                    message: trimLine,
+                    severity: vscode.DiagnosticSeverity.Information,
+                    code: 'db-issue'
                 });
             }
-        };
+        }
 
-        checkIssue(['memory leak', 'leak', 'closure'], 'Memory Leak', vscode.DiagnosticSeverity.Warning, 'mem-leak');
-        checkIssue(['database', 'db call', 'query', 'sql', 'n+1'], 'Database', vscode.DiagnosticSeverity.Information, 'db-issue');
-        checkIssue(['blocking', 'synchronous', 'sync fs'], 'I/O Blocking', vscode.DiagnosticSeverity.Error, 'io-blocking');
-        checkIssue(['insecure', 'pii', 'credential', 'header security', 'metadata'], 'Security', vscode.DiagnosticSeverity.Error, 'security-risk');
-
-        return issues;
+        return issues.slice(0, 10); // Limit to top 10 most harmful issues
     }
 }
