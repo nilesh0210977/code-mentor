@@ -1,0 +1,64 @@
+{
+  "name": "code-mentor",
+  "displayName": "Code Mentor",
+  "description": "AI-powered code explanation and real-time analysis.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.108.1"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:javascript",
+    "onLanguage:typescript",
+    "onLanguage:python",
+    "onLanguage:go",
+    "onLanguage:java"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Code Mentor",
+      "properties": {
+        "codeMentor.ollamaModel": {
+          "type": "string",
+          "default": "deepseek-coder",
+          "description": "The Ollama model to use for analysis and explanation."
+        },
+        "codeMentor.ollamaUrl": {
+          "type": "string",
+          "default": "http://localhost:11434",
+          "description": "The URL where Ollama is hosted."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "code-mentor.analyze",
+        "title": "Code Mentor: Analyze Current File"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "@types/vscode": "^1.108.1",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.39.2",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.52.0"
+  },
+  "dependencies": {
+    "ollama": "^0.6.3"
+  }
+}
