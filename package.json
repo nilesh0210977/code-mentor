@@ -1,10 +1,11 @@
 {
   "name": "code-mentor",
   "displayName": "Code Mentor",
+  "publisher": "nilesh-sharma",
   "description": "AI-powered code explanation and real-time analysis.",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.108.1"
+    "vscode": "^1.100.0"
   },
   "categories": [
     "Other"
